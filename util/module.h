@@ -174,6 +174,7 @@ struct val_anchors;
 struct val_neg_cache;
 struct iter_forwards;
 struct iter_hints;
+struct mm_forwards;
 
 /** Maximum number of modules in operation */
 #define MAX_MODULE 5
@@ -331,6 +332,11 @@ struct module_env {
 	 * data structure. 
 	 */
 	struct iter_hints* hints;
+	/**
+	 * mixed-mode forwarders that should be used for INSECURE and INDETERMINATE
+	 * Query answers.
+	 */
+	struct mm_forwards* mm_fwds;
 	/** module specific data. indexed by module id. */
 	void* modinfo[MAX_MODULE];
 };

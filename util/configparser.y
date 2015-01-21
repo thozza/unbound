@@ -125,6 +125,7 @@ extern struct config_parser_state* cfg_parser;
 %token VAR_RATELIMIT_FOR_DOMAIN VAR_RATELIMIT_BELOW_DOMAIN VAR_RATELIMIT_FACTOR
 %token VAR_CAPS_WHITELIST VAR_CACHE_MAX_NEGATIVE_TTL VAR_PERMIT_SMALL_HOLDDOWN
 %token VAR_QNAME_MINIMISATION
+%token VAR_MIXED_MODE_FWD
 
 %%
 toplevelvars: /* empty */ | toplevelvars toplevelvar ;
@@ -191,7 +192,8 @@ content_server: server_num_threads | server_verbosity | server_port |
 	server_ratelimit_size | server_ratelimit_for_domain |
 	server_ratelimit_below_domain | server_ratelimit_factor |
 	server_caps_whitelist | server_cache_max_negative_ttl |
-	server_permit_small_holddown | server_qname_minimisation
+	server_permit_small_holddown | server_qname_minimisation |
+	server_mixed_mode_fwd
 	;
 stubstart: VAR_STUB_ZONE
 	{
@@ -1359,6 +1361,13 @@ server_qname_minimisation: VAR_QNAME_MINIMISATION STRING_ARG
 		else cfg_parser->cfg->qname_minimisation = 
 			(strcmp($2, "yes")==0);
 		free($2);
+	}
+	;
+server_mixed_mode_fwd: VAR_MIXED_MODE_FWD STRING_ARG
+	{
+		OUTYY(("P(mixed-mode-fwd:%s)\n", $2));
+		if(!cfg_strlist_insert(&cfg_parser->cfg->mixed_mode_fwds, $2))
+			yyerror("out of memory");
 	}
 	;
 stub_name: VAR_NAME STRING_ARG

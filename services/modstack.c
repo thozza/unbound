@@ -46,6 +46,7 @@
 #include "dns64/dns64.h"
 #include "iterator/iterator.h"
 #include "validator/validator.h"
+#include "mixed_mode/mixed_mode.h"
 
 #ifdef WITH_PYTHONMODULE
 #include "pythonmod/pythonmod.h"
@@ -122,7 +123,8 @@ module_list_avail(void)
 		"python", 
 #endif
 		"validator", 
-		"iterator", 
+		"iterator",
+		"mixed-mode",
 		NULL};
 	return names;
 }
@@ -140,7 +142,8 @@ module_funcs_avail(void)
 		&pythonmod_get_funcblock, 
 #endif
 		&val_get_funcblock, 
-		&iter_get_funcblock, 
+		&iter_get_funcblock,
+		&mixed_mode_get_funcblock,
 		NULL};
 	return fb;
 }

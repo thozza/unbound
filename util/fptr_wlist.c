@@ -52,6 +52,7 @@
 #include "services/cache/infra.h"
 #include "services/cache/rrset.h"
 #include "dns64/dns64.h"
+#include "mixed_mode/mixed_mode.h"
 #include "iterator/iterator.h"
 #include "iterator/iter_fwd.h"
 #include "validator/validator.h"
@@ -312,6 +313,7 @@ fptr_whitelist_mod_init(int (*fptr)(struct module_env* env, int id))
 	if(fptr == &iter_init) return 1;
 	else if(fptr == &val_init) return 1;
 	else if(fptr == &dns64_init) return 1;
+	else if(fptr == &mixed_mode_init) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_init) return 1;
 #endif
@@ -324,6 +326,7 @@ fptr_whitelist_mod_deinit(void (*fptr)(struct module_env* env, int id))
 	if(fptr == &iter_deinit) return 1;
 	else if(fptr == &val_deinit) return 1;
 	else if(fptr == &dns64_deinit) return 1;
+	else if(fptr == &mixed_mode_deinit) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_deinit) return 1;
 #endif
@@ -337,6 +340,7 @@ fptr_whitelist_mod_operate(void (*fptr)(struct module_qstate* qstate,
 	if(fptr == &iter_operate) return 1;
 	else if(fptr == &val_operate) return 1;
 	else if(fptr == &dns64_operate) return 1;
+	else if(fptr == &mixed_mode_operate) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_operate) return 1;
 #endif
@@ -350,6 +354,7 @@ fptr_whitelist_mod_inform_super(void (*fptr)(
 	if(fptr == &iter_inform_super) return 1;
 	else if(fptr == &val_inform_super) return 1;
 	else if(fptr == &dns64_inform_super) return 1;
+	else if(fptr == &mixed_mode_inform_super) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_inform_super) return 1;
 #endif
@@ -363,6 +368,7 @@ fptr_whitelist_mod_clear(void (*fptr)(struct module_qstate* qstate,
 	if(fptr == &iter_clear) return 1;
 	else if(fptr == &val_clear) return 1;
 	else if(fptr == &dns64_clear) return 1;
+	else if(fptr == &mixed_mode_clear) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_clear) return 1;
 #endif
@@ -375,6 +381,7 @@ fptr_whitelist_mod_get_mem(size_t (*fptr)(struct module_env* env, int id))
 	if(fptr == &iter_get_mem) return 1;
 	else if(fptr == &val_get_mem) return 1;
 	else if(fptr == &dns64_get_mem) return 1;
+	else if(fptr == &mixed_mode_get_mem) return 1;
 #ifdef WITH_PYTHONMODULE
 	else if(fptr == &pythonmod_get_mem) return 1;
 #endif

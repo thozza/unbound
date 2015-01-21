@@ -372,6 +372,9 @@ struct config_file {
 	int ratelimit_factor;
 	/** minimise outgoing QNAME and hide original QTYPE if possible */
 	int qname_minimisation;
+
+	/** mixed-mode module list of forwarders */
+	struct config_strlist* mixed_mode_fwds;
 };
 
 /** from cfg username, after daemonise setup performed */

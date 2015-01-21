@@ -125,6 +125,9 @@ usage()
 	printf("				or give list of ip addresses\n");
 	printf("  ratelimit_list [+a]		list ratelimited domains\n");
 	printf("		+a		list all, also not ratelimited\n");
+	printf("  mixed_mode_fwds [off | addr ...]	without arg show mixed-mode forwarders in use\n");
+	printf("					or off to turn off mixed-mode and delete forwardrs list\n");
+	printf("					or give list of ip addresses of forwarders to use\n");
 	printf("Version %s\n", PACKAGE_VERSION);
 	printf("BSD licensed, see LICENSE in source package for details.\n");
 	printf("Report bugs to %s\n", PACKAGE_BUGREPORT);

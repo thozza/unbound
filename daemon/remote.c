@@ -76,6 +76,7 @@
 #include "iterator/iter_fwd.h"
 #include "iterator/iter_hints.h"
 #include "iterator/iter_delegpt.h"
+#include "mixed_mode/mm_fwds.h"
 #include "services/outbound_list.h"
 #include "services/outside_network.h"
 #include "sldns/str2wire.h"
@@ -1804,6 +1805,109 @@ do_forward_add(SSL* ssl, struct worker* worker, char* args)
 	send_ok(ssl);
 }
 
+/**
+ * print current mixed-mode forwarders
+ */
+static void
+print_mm_fwds(SSL* ssl, struct mm_forwards* fwds)
+{
+	char buffer[256];
+	int num = 0;
+	struct sock_list* forwarder;
+
+	if (!fwds->list) {
+		(void)ssl_printf(ssl, "not using any mixed-mode forwarders");
+	}
+
+	for (forwarder = fwds->list; forwarder != NULL; forwarder = forwarder->next) {
+		addr_to_str(&forwarder->addr, forwarder->len, buffer, sizeof(buffer));
+		(void)ssl_printf(ssl, "%s%s", (num++ ? " " : ""), buffer);
+	}
+
+	(void)ssl_printf(ssl, "\n");
+}
+
+/**
+ * Do the mixed_mode_fwds command
+ *
+ * NO arguments: return the list of currently used forwarders
+ * "off": remove all existing forwarders
+ * list of IPs: remove existing forwarders and setup new forwarders
+ */
+static void
+do_mixed_mode_fwds(SSL* ssl, struct worker* worker, char* args)
+{
+	struct mm_forwards* fwds = worker->env.mm_fwds;
+	struct mm_forwards* new_fwds = NULL;
+	struct sockaddr_storage addr;
+	socklen_t len;
+	char *next = NULL;
+	char *cur = NULL;
+
+	if(!fwds) {
+		(void)ssl_printf(ssl, "error: structure not allocated\n");
+		return;
+	}
+
+	/* on no argument - return the list of current forwarders */
+	if(args == NULL || args[0] == 0) {
+		(void)print_mm_fwds(ssl, fwds);
+		return;
+	}
+
+	/* on "off" remove all forwarders */
+	if(strcmp(args, "off") == 0) {
+		/* delete all existing queries */
+		mesh_delete_all(worker->env.mesh);
+		mm_forwards_delete_all(fwds);
+	} else {
+		next = args;
+
+		/* temporary forwards structure */
+		new_fwds = mm_forwards_create();
+		if (!new_fwds) {
+			(void)ssl_printf(ssl, "error: out of memory\n");
+			return;
+		}
+
+		/* process all addresses passed as arguments */
+		while(next) {
+			cur = next;
+			next = strchr(next, ' ');
+
+			/* do something like strtok */
+			if(next) {
+				*next = '\0';
+				++next;	/* move after the \0 */
+				next = skipwhite(next); /* skip all whitespaces */
+			}
+
+			/* parse address */
+			if(!extstrtoaddr(cur, &addr, &len)) {
+				(void)ssl_printf(ssl, "error: cannot parse forwarder address: %s\n", cur);
+				mm_forwards_destroy(&new_fwds);
+				return;
+			}
+
+			/* add new address */
+			if (!mm_forwards_add(new_fwds, &addr, len)) {
+				(void)ssl_printf(ssl, "error: out of memory\n");
+				mm_forwards_destroy(&new_fwds);
+				return;
+			}
+		}
+
+		/* if we got here, all addresses were parsed successfully */
+		/* delete all existing queries */
+		mesh_delete_all(worker->env.mesh);
+		/* replace forwards list */
+		mm_forwards_replace(fwds, new_fwds);
+		mm_forwards_destroy(&new_fwds);
+	}
+
+	send_ok(ssl);
+}
+
 /** do the forward_remove command */
 static void
 do_forward_remove(SSL* ssl, struct worker* worker, char* args)
@@ -2465,6 +2569,9 @@ execute_cmd(struct daemon_remote* rc, SSL* ssl, char* cmd,
 		return;
 	} else if(cmdcmp(p, "lookup", 6)) {
 		do_lookup(ssl, worker, skipwhite(p+6));
+		return;
+	} else if(cmdcmp(p, "mixed_mode_fwds", 15)) {
+		do_mixed_mode_fwds(ssl, worker, skipwhite(p+15));
 		return;
 	}
 
