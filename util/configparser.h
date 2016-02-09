@@ -1,8 +1,8 @@
-/* A Bison parser, made by GNU Bison 3.0.4.  */
+/* A Bison parser, made by GNU Bison 3.0.2.  */
 
 /* Bison interface for Yacc-like parsers in C
 
-   Copyright (C) 1984, 1989-1990, 2000-2015 Free Software Foundation, Inc.
+   Copyright (C) 1984, 1989-1990, 2000-2013 Free Software Foundation, Inc.
 
    This program is free software: you can redistribute it and/or modify
    it under the terms of the GNU General Public License as published by
@@ -207,7 +207,8 @@ extern int yydebug;
     VAR_CAPS_WHITELIST = 417,
     VAR_CACHE_MAX_NEGATIVE_TTL = 418,
     VAR_PERMIT_SMALL_HOLDDOWN = 419,
-    VAR_QNAME_MINIMISATION = 420
+    VAR_QNAME_MINIMISATION = 420,
+    VAR_MIXED_MODE_FWD = 421
   };
 #endif
 /* Tokens.  */
@@ -374,20 +375,19 @@ extern int yydebug;
 #define VAR_CACHE_MAX_NEGATIVE_TTL 418
 #define VAR_PERMIT_SMALL_HOLDDOWN 419
 #define VAR_QNAME_MINIMISATION 420
+#define VAR_MIXED_MODE_FWD 421
 
 /* Value type.  */
 #if ! defined YYSTYPE && ! defined YYSTYPE_IS_DECLARED
-
+typedef union YYSTYPE YYSTYPE;
 union YYSTYPE
 {
-#line 64 "./util/configparser.y" /* yacc.c:1909  */
+#line 64 "util/configparser.y" /* yacc.c:1909  */
 
 	char*	str;
 
-#line 388 "util/configparser.h" /* yacc.c:1909  */
+#line 390 "util/configparser.h" /* yacc.c:1909  */
 };
-
-typedef union YYSTYPE YYSTYPE;
 # define YYSTYPE_IS_TRIVIAL 1
 # define YYSTYPE_IS_DECLARED 1
 #endif
